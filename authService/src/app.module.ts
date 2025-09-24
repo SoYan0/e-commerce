@@ -17,6 +17,7 @@ import { SessionsModule } from './sessions/sessions.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DB_URL,
+      ssl: { rejectUnauthorized: false, },
       synchronize: true,
       autoLoadEntities: true,
     }),
