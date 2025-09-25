@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import * as redis from 'ioredis';
+import Redis from 'ioredis';
 
 @Global()
 @Module({
@@ -7,9 +7,14 @@ import * as redis from 'ioredis';
     {
       provide: 'REDIS_CLIENT',
       useFactory: () => {
-        return new redis.default({
-          host: process.env.REDIS_HOST || 'localhost',
-          port: parseInt(`${process.env.REDIS_PORT}`) || 6379,
+        const redisUrl = process.env.REDIS_URL;
+
+        if (!redisUrl) {
+          throw new Error('REDIS_URL is not set in environment variables');
+        }
+
+        return new Redis(redisUrl, {
+          tls: redisUrl.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined,
         });
       },
     },
